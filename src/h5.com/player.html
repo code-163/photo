@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>本站永久网址：悄悄乐.com</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+    <script src="./js/DPlayer.min.js"></script>
+    <script src="./js/hls.min.js"></script>
+    <style>
+        body {
+            background: #f7f2ef;
+        }
+    </style>
+</head>
+<body>
+
+<div class="weui-header bg-blue" style="background-color: #07c160;position: fixed;width: 100%;top: 0;z-index: 1000;">
+    <div class="weui-header-left">
+        <a class="icon icon-109 f-white" id="header" href="javascript:window.history.go(-1);">返回</a>
+    </div>
+    <h1 class="weui-header-title">视频播放</h1>
+</div>
+
+<div id="dplayer" style="padding-top: 2.9em; height: 50%; display: none;"></div>
+
+<div id="login_register" style="padding-bottom:2em; margin: 100px 0 0 0; text-align: center; display: none;">
+    <p style="margin-bottom: 20px;" id="loginMsg">你未登录，请先登录</p>
+    <a href="javascript:login();" class="weui-btn weui-btn_mini weui-btn_primary" id="login" style="margin-right: 5em; padding: 0 3em;">登录</a>
+    <a href="javascript:register();" class="weui-btn weui-btn_mini weui-btn_warn" id="register" style="padding: 0 3em;">注册</a>
+</div>
+
+<div id="chongzhi" style="padding: 100px 0 2em 0; text-align: center; display: none;">
+    <p style="margin-bottom: 30px;" id="msg"></p>
+    <a href="buyvip.html" class="weui-btn weui-btn_mini weui-btn_primary" style="padding: 0 3em;">会员充值</a>
+</div>
+
+<div style="text-align: center;line-height: 2em;padding: 0 0.5em 0 0.5em;margin-top: 0.5em;">
+    <p id="title"></p>
+    <p style="margin-top: 1em;"><a href="index.html">>> 更多精彩 <<</a></p>
+</div>
+
+<script>
+    let dp;
+    let uid = localStorage.getItem('uid');
+
+    //获取视频内容
+    function getMovieInfo(id) {
+        if (id === "null") {
+            id = "";
+        }
+        return new Promise((resolve) => {
+            $.post(server_url + "h5/getVideoInfo", {id: id, uid: uid}, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    getMovieInfo($_GET("id")).then((data) => {
+        if (data.code === 200) {
+            var player = '<video controls playsinline style="width:100%; height: 100%;"><source src="' + data.playerUri + '" type="video/mp4"></video>';
+            $("#dplayer").append(player);
+            $("#dplayer").css("background-color", "#000");
+            $("#dplayer").css("display", "block");
+            /*dp = new DPlayer({
+                container: document.getElementById('dplayer'),
+                volume: 0.5,
+                hotkey: true,
+                mutex: true,
+                preload: 'none',
+                video: {
+                    url: data.playerUri,
+                    type: 'auto',
+                    pic: 'images/3.jpg'
+                },
+            });*/
+            $("#title").html(data.title);
+        } else {
+            if (data.code !== 300) {
+                $("#chongzhi").css("display", "block");
+                $("#msg").text(data.msg);
+            } else {
+                $("#login_register").css("display", "block");
+                $("#loginMsg").text(data.msg);
+            }
+        }
+    });
+</script>
+</body>
+</html>

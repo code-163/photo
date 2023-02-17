@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微信支付</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+</head>
+<body>
+<script>
+    let orderNo = $_GET("orderNo");
+    let domain = $_GET("domain") ? $_GET("domain") : "http://悄悄乐.com";
+    let type = $_GET("type");
+
+    //请求微信H5支付
+    function requestWxH5Pay(orderNo, domain) {
+        $.showLoading("支付加载中");
+        $.post(server_url + "h5/requestWxH5Pay", {orderNo: orderNo}, function (res) {
+            if (res.code === 200) {
+                $.hideLoading();
+                let redirect_uri = encodeURIComponent("http://mall.trumall.cn/checkWxPayH5.html?orderNo=" + orderNo + "&domain=" + domain + "&type=" + type);
+                window.location.href = res.h5Url + "&redirect_url=" + redirect_uri;
+            } else {
+                $.hideLoading();
+                $.alert(res.msg, "系统提示", function () {
+                    console.log(res.msg);
+                });
+            }
+        }, 'json');
+    }
+
+    if (!orderNo) {
+        window.location.href = domain;
+        //throw SyntaxError();
+    } else {
+        requestWxH5Pay(orderNo, domain);
+    }
+</script>
+</body>
+</html>

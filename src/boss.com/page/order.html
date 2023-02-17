@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>订单列表</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../assets/module/admin.css?v=318"/>
+    <script type="text/javascript" src="../assets/libs/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../assets/js/server_url.js"></script>
+    <script type="text/javascript" src="../assets/js/function.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">订单号:</label>
+                        <div class="layui-input-inline">
+                            <input name="order_no" class="layui-input" placeholder="输入订单号"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">订单状态:</label>
+                        <div class="layui-input-inline">
+                            <select name="status">
+                                <option value="">选择状态</option>
+                                <option value="0">未支付</option>
+                                <option value="1">已支付</option>
+                                <option value="2">已过期</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn" lay-filter="userTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="statusTpl">
+    {{#  if(d.status == 0){ }}
+    <span class="layui-badge layui-badge-gray">未支付</span>
+    {{#  } else if (d.status == 1){ }}
+    <span class="layui-badge layui-badge-green">已支付</span>
+    {{#  } else { }}
+    <span class="layui-badge layui-badge-red">已过期</span>
+    {{#  } }}
+</script>
+
+<script type="text/html" id="statusTpl02">
+    {{#  if(d.vip == 1){ }}
+    <span>VIP</span>
+    {{#  } else if (d.vip == 2){ }}
+    <span>SVIP1</span>
+    {{#  } else if (d.vip == 3){ }}
+    <span>SVIP2</span>
+    {{#  } }}
+</script>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="userTbBar">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- js部分 -->
+<script type="text/javascript" src="../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../assets/js/common.js?v=318"></script>
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var xmSelect = layui.xmSelect;
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#userTable',
+            height: 'full-100',
+            url: server_url + 'getOrderList?admincode=' + admincode + '&admintoken=' + admintoken,
+            page: {
+                limit: 100,
+                curr: location.hash.replace('#!page=', ''),
+                hash: 'page'
+            },
+            limits: [100, 200, 300, 500, 1000],
+            cellMinWidth: 100,
+            cols: [[
+                {field: 'id', title: 'ID', sort: true, width: 80},
+                {field: 'order_no', title: '订单号', minWidth: 220},
+                {field: 'vip', title: '类型', templet: '#statusTpl02', minWidth: 60},
+                {
+                    field: 'price', title: '金额', templet: function (d) {
+                        return '<div>¥ ' + d.price + '</div>';
+                    }, minWidth: 100
+                },
+                {field: 'account', title: '代理', minWidth: 100},
+                {field: 'username', title: '用户', minWidth: 100},
+                {field: 'status', title: '订单状态', templet: '#statusTpl', minWidth: 100},
+                {field: 'ctime', title: '创建时间', sort: true, minWidth: 160},
+                {field: 'pay_time', title: '支付时间', sort: true, minWidth: 160},
+            ]]
+        });
+
+        /* 表格搜索 */
+        form.on('submit(userTbSearch)', function (data) {
+            //alert(JSON.stringify(data.field));
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(userTable)', function (obj) {
+            if (obj.event === 'edit') { // 修改
+                showEditModel(obj.data);
+            } else if (obj.event === 'del') { // 删除
+                doDel(obj);
+            } else if (obj.event === 'reset') { // 重置密码
+                resetPsw(obj);
+            }
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(userTable)', function (obj) {
+            if (obj.event === 'add') { // 添加
+                showEditModel();
+            } else if (obj.event === 'del') { // 删除
+                var checkRows = table.checkStatus('userTable');
+                if (checkRows.data.length === 0) {
+                    layer.msg('请选择要删除的数据', {icon: 2});
+                    return;
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.id;
+                });
+                doDel({ids: ids});
+            } else if (obj.event === 'ban') { //禁用
+                var checkRows = table.checkStatus('userTable');
+                if (checkRows.data.length === 0) {
+                    layer.msg('请选择要禁用的数据', {icon: 2});
+                    return;
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.id;
+                });
+                doBan({ids: ids});
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

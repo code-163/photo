@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+</head>
+<body>
+<script>
+    let c = $_GET("c");
+    let uuid = $_GET("uuid");
+
+    function getDomain() {
+        return new Promise((resolve) => {
+            $.get(server_url + "h5/getDomain", {}, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    $(function () {
+        if (!c) {
+            window.location.href = "index.html";
+        } else {
+            getDomain().then((data) => {
+                if (data.code === 200) {
+                    window.location.replace(data.domain + "/ex.html?c=" + c + "&uuid=" + uuid);
+                } else {
+                    $.alert(data.msg, "系统提示", function () {
+                        console.log(data.msg);
+                    });
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

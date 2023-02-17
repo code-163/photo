@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+    <style>
+        body {
+            background: #f7f2ef;
+        }
+
+        .ex {
+            padding-bottom: 40px;
+        }
+
+        .ex img {
+            width: 100%;
+        }
+    </style>
+    <script>
+        let code = $_GET("c");
+        let uuid = $_GET("uuid");
+
+        /*let uid = localStorage.getItem('uid');
+        if (uid) {
+            window.location.replace("index.html");
+            throw SyntaxError();
+        }*/
+
+        function getIp() {
+            return new Promise((resolve) => {
+                $.get(server_url + "h5/getIp", {}, function (res) {
+                    resolve(res);
+                }, 'json');
+            });
+        }
+
+        function checkOrder() {
+            if (uuid) {
+                $.get(server_url + "h5/checkOrderData", {uuid: uuid}, function (res) {
+                    //alert(res.code + " => " + res.msg + " => " + res.orderNo);
+                    if (res.code === 200) {
+                        window.location.replace("register.html?orderNo=" + res.orderNo + "&c=" + code);
+                    } else if (res.code === 300) {
+                        window.location.replace("index.html");
+                    }
+                }, 'json');
+            }
+        }
+
+        function addVisit() {
+            $.get(server_url + "h5/addVisit", {types: 0, code: code}, function (res) {
+                console.log(res.code + " => " + res.msg);
+            }, 'json');
+        }
+
+        addVisit();
+        checkOrder();
+    </script>
+</head>
+<body>
+
+<div class="ex">
+    <img src="images/ex.jpg">
+</div>
+
+<div class="pay-div" style="width: 100%; position: fixed; bottom: 5px;">
+    <a href="javascript:gotoOrder(1);" class="weui-btn weui-btn_primary" id="pay">立即支付38元观看</a>
+</div>
+
+<script>
+    function goOrder(vip) {
+        return new Promise((resolve) => {
+            $.post(server_url + "h5/goExOrder", {
+                vip: vip,
+                code: code,
+                uuid: uuid
+            }, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    function gotoOrder(vip) {
+        $.showLoading("正在生成订单");
+        goOrder(vip).then((data) => {
+            if (data.code === 200) {
+                $.hideLoading();
+                let domain = "https://" + window.document.domain;
+                let ua = window.navigator.userAgent.toLowerCase();
+                if (ua.match(/MicroMessenger/i) == "micromessenger") {
+                    //alert("微信应用");
+                    window.location.href = "getOid.html?orderNo=" + data.orderNo + "&domain=" + domain + "&c=" + code + "&mchid=" + data.mchid;
+                } else {
+                    //alert("其他");
+                    window.location.href = "https://mall.trumall.cn/wxPayH5.html?orderNo=" + data.orderNo + "&domain=" + domain + "&mchid=" + data.mchid + "&type=reg";
+                }
+            } else {
+                $.hideLoading();
+                $.alert(data.msg, "系统提示", function () {
+                    console.log(data.msg);
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

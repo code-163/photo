@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>下级代理</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../assets/module/admin.css?v=318"/>
+    <script type="text/javascript" src="../assets/libs/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../assets/js/server_url.js"></script>
+    <script type="text/javascript" src="../assets/js/function.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+        .layui-table img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .layui-table-cell {
+            height: auto;
+        }
+
+        .paper-info-group {
+            padding: 15px 25px;
+        }
+
+        .paper-info-group h3 {
+            font-weight: bold;
+            color: #000000;
+            padding-bottom: 8px;
+        }
+
+        .paper-info-group p {
+            color: #666;
+            padding-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .paper-info-group .paper-info-group-imgs {
+            padding-top: 5px;
+        }
+
+        .paper-info-group .paper-info-group-imgs img {
+            margin-right: 15px;
+            margin-bottom: 15px;
+            cursor: zoom-in;
+        }
+
+        .paper-info-group .paper-info-group-imgs img:last-child {
+            margin-right: 0;
+        }
+
+        /* 文件列表item */
+        .file-choose-list-item {
+            position: relative;
+            display: inline-block;
+            vertical-align: top;
+            padding: 8px 0px;
+            margin: 5px 12px 0px 0px;
+            cursor: pointer;
+        }
+
+        .file-choose-list-item:hover {
+            background-color: #F7F7F7;
+        }
+
+        /* 文件列表图片 */
+        .file-choose-list-item-img {
+            width: 107px;
+            height: 107px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            background-color: #eee;
+        }
+
+        .file-choose-list-item-img.img-icon {
+            background-size: inherit;
+            background-color: transparent;
+        }
+
+        .file-choose-list-item.active .file-choose-list-item-img:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* 文件列表名称 */
+        .file-choose-list-item-name {
+            width: 107px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #333;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        /* 文件列表复选框 */
+        .file-choose-list-item-ck {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+        }
+
+        .file-choose-list-item-ck .layui-form-checkbox {
+            padding: 0;
+        }
+
+        /* 文件列表操作菜单 */
+        .file-choose-oper-menu {
+            background-color: #fff;
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            border-radius: 2px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, .15);
+            transition: all .3s;
+            overflow: hidden;
+            transform: scale(0);
+            transform-origin: left top;
+            visibility: hidden;
+        }
+
+        .file-choose-oper-menu.show {
+            transform: scale(1);
+            visibility: visible;
+        }
+
+        /* 文件列表操作菜单item */
+        .file-choose-oper-menu-item {
+            color: #555;
+            padding: 6px 5px;
+            font-size: 14px;
+            min-width: 70px;
+            text-align: center;
+            cursor: pointer;
+            display: block;
+        }
+
+        .file-choose-oper-menu-item:hover {
+            background-color: #eee;
+        }
+
+        /** 文件列表为空时样式 */
+        .file-choose-empty {
+            text-align: center;
+            color: #999;
+            padding: 50px 0;
+        }
+
+        .file-choose-empty .layui-icon {
+            font-size: 60px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .layui-table img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .layui-table-cell {
+            height: auto;
+        }
+
+        /* 表单标题加虚线 */
+        .form-item-title {
+            text-align: center;
+            position: relative;
+        }
+
+        .form-item-title:before {
+            content: "";
+            position: absolute;
+            border-top: 1px dashed #ccc;
+            left: 40px;
+            right: 40px;
+            top: 8px;
+            z-index: -1;
+        }
+
+        .form-item-title > span {
+            background-color: white;
+            padding: 0 10px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .layui-inline {
+            margin-right: 0px !important;
+            margin-bottom: 15px !important;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">代理账号:</label>
+                        <div class="layui-input-inline">
+                            <input name="account" class="layui-input" placeholder="输入代理"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn" lay-filter="userTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <a class="layui-btn form-search-expand" search-expand>
+                            展开 <i class="layui-icon layui-icon-down"></i></a>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑产品表单弹窗 -->
+<script type="text/html" id="userEditDialog">
+    <form id="userEditForm" lay-filter="userEditForm" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <input name="code" type="hidden"/>
+        <div class="layui-form-item layui-row">
+            <div class="layui-inline layui-col-md4">
+                <label class="layui-form-label layui-form-required">账户:</label>
+                <div class="layui-input-block">
+                    <input name="account" value="" placeholder="请输入账户" class="layui-input" lay-verType="tips"
+                           lay-verify="required"/>
+                </div>
+            </div>
+            <div class="layui-inline layui-col-md4">
+                <label class="layui-form-label layui-form-required">密码:</label>
+                <div class="layui-input-block">
+                    <input name="passwd" value="" placeholder="请输入密码" class="layui-input" lay-verType="tips" lay-verify="required"/>
+                </div>
+            </div>
+            <div class="layui-inline layui-col-md4">
+                <label class="layui-form-label layui-form-required">点位:</label>
+                <div class="layui-input-block">
+                    <input name="point" value="" placeholder="请输入点位" type="number" class="layui-input"
+                           lay-verType="tips"
+                           lay-verify="required"/>
+                </div>
+            </div>
+            <div class="layui-inline layui-col-md12">
+                <label class="layui-form-label">推广地址:</label>
+                <div class="layui-input-block">
+                    <input name="plink" value="" placeholder="请输入地址" class="layui-input"/>
+                </div>
+            </div>
+            <div class="layui-inline layui-col-md12">
+                <label class="layui-form-label">备注:</label>
+                <div class="layui-input-block">
+                    <input name="remarks" value="" placeholder="请输入备注" class="layui-input"/>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="userEditSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+
+<!-- 采购地址列表 -->
+<script type="text/html" id="purchaseData">
+    <a href="{{d.purchase01}}" target="_blank"><i class="layui-icon layui-icon-cart"></i></a>
+    <a href="{{d.purchase02}}" target="_blank"><i class="layui-icon layui-icon-cart"></i></a>
+</script>
+
+<!-- 表格状态列 -->
+<script type="text/html" id="userTbState">
+    <input type="checkbox" lay-filter="userTbStateCk" value="{{d.id}}" lay-skin="switch"
+           lay-text="正常|下架" {{d.status==0?'checked':''}} style="display: none;"/>
+    <p style="display: none;">{{d.status==0?'正常':'下架'}}</p>
+</script>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="userTbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- 查看二级代理 -->
+<script type="text/html" id="goodsCommentDialog">
+    <div class="layui-card-body">
+        <!-- 表格工具栏 -->
+        <form class="layui-form toolbar">
+            <div class="layui-form-item" style="margin-bottom: -10px;">
+                <div class="layui-inline">
+                    <label class="layui-form-label">代理账号:</label>
+                    <div class="layui-input-inline" style="width: 145px;">
+                        <input name="account" class="layui-input" placeholder="输入代理账号"/>
+                    </div>
+                </div>
+                <div class="layui-inline">&emsp;
+                    <button class="layui-btn icon-btn" lay-filter="userTbSearch" lay-submit>
+                        <i class="layui-icon">&#xe615;</i>搜索
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table id="goodsCommentTable" lay-filter="goodsCommentTable" class="layui-hide"></table>
+</script>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</button>
+        <span class="introjs-helperNumberLayer">0</span>
+        <span class="layui-btn layui-btn-sm layui-btn-primary snum">已选：0个</span>'
+        <!--<button class="layui-btn layui-btn-sm" lay-event="update">编辑</button>-->
+    </div>
+</script>
+
+<!-- 查看商品表格操作列 -->
+<script type="text/html" id="goodsCommentTbBar">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- js部分 -->
+<script type="text/javascript" src="../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../assets/js/common.js?v=318"></script>
+<script>
+    layui.use(['layer', `upload`, 'form', 'table', 'util', 'admin', 'xmSelect', 'cascader', 'laydate', `laypage`, `laytpl`, `contextMenu`, `dropdown`], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var xmSelect = layui.xmSelect;
+        var cascader = layui.cascader;
+        var laydate = layui.laydate;
+        var laypage = layui.laypage
+        var laytpl = layui.laytpl;
+        var contextMenu = layui.contextMenu;
+        var upload = layui.upload;
+        var dropdown = layui.dropdown;
+        var regionList;
+        const aid = localStorage.getItem("aid");
+
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#userTable',
+            height: 'full-100',
+            url: server_url + "agent/getAgentLevel?pid=" + aid,
+            page: {
+                limit: 100,
+                curr: location.hash.replace('#!page=', ''),
+                hash: 'page'
+            },
+            limits: [100, 200, 300, 500, 1000],
+            toolbar: ['<p>',
+                '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon layui-icon-add-1"></i>添加</button>&nbsp;',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon layui-icon-delete"></i>删除</button>&nbsp;',
+                '<span class="layui-btn layui-btn-sm layui-btn-primary snum">已选：0个</span>',
+                '</p>'].join(''),
+            cellMinWidth: 80,
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'id', title: 'ID', minWidth: 60},
+                {
+                    field: 'account',
+                    title: '代理账号',
+                    minWidth: 130,
+                    style: 'cursor: pointer;'
+                },
+                {
+                    field: 'passwd',
+                    title: '代理密码',
+                    minWidth: 130,
+                    style: 'cursor: pointer;'
+                },
+                {field: 'code', title: '代理编号', minWidth: 110},
+                {field: 'point', title: '点位', minWidth: 70},
+                {
+                    field: 'sales', title: '销售额', templet: function (d) {
+                        return '<div>¥ ' + d.sales + '</div>';
+                    }, minWidth: 110
+                },
+                {
+                    field: 'wallet', title: '钱包', templet: function (d) {
+                        return '<div>¥ ' + d.wallet + '</div>';
+                    }, minWidth: 110
+                },
+                {field: 'plink', title: '推广地址', minWidth: 261},
+                {field: 'remarks', title: '备注', minWidth: 110},
+                {field: 'ctime', title: '创建时间', minWidth: 110},
+                {
+                    title: '操作',
+                    toolbar: '#userTbBar',
+                    align: 'center',
+                    minWidth: 126,
+                    fixed: 'right'
+                }
+            ]],
+            done: function (data) {
+                //insTb.reload({page: {curr: 3}});
+            }
+        });
+
+        //触发复选框选择
+        table.on('checkbox(userTable)', function (obj) {
+            var checkStatus = table.checkStatus('userTable'); //idTest 即为基础参数 id 对应的值
+            //console.log(checkStatus.data) //获取选中行的数据
+            //console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
+            $(".snum").text("已选：" + checkStatus.data.length + "个");
+            //console.log(obj); //当前行的一些常用操作集合
+            //console.log(obj.checked); //当前是否选中状态
+            //console.log(obj.data); //选中行的相关数据
+            //console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+        });
+
+        //触发单元格编辑
+        table.on('edit(userTable)', function (obj) {
+            console.log(obj.value); //得到修改后的值
+            console.log(obj.field); //当前编辑的字段名
+            console.log(obj.data); //所在行的所有相关数据
+        });
+
+        /* 创建时间 */
+        laydate.render({
+            elem: '#ctime',
+            range: true,
+            trigger: 'click'
+        });
+
+        /* 表格搜索 */
+        form.on('submit(userTbSearch)', function (data) {
+            console.log(data.field);
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(userTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') { // 修改
+                showEditModel(data, obj);
+            } else if (obj.event === 'del') { // 删除
+                doDel(obj);
+            } else if (obj.event === 'lookImages') {
+                layer.photos({
+                    photos: {data: [{"alt": data.name, "src": imgUrl + data.image}], start: 0},
+                    shade: .1,
+                    closeBtn: true
+                });
+            }
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(userTable)', function (obj) {
+            if (obj.event === 'add') { // 添加
+                showEditModel();
+            } else if (obj.event === 'del') { // 删除
+                var checkRows = table.checkStatus('userTable');
+                if (checkRows.data.length === 0) {
+                    layer.msg('请选择要删除的数据', {icon: 2});
+                    return;
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.id;
+                });
+                doDel({ids: ids});
+            }
+        });
+
+        /* 显示表单弹窗 */
+        function showEditModel(mData, obj) {
+            admin.open({
+                type: 1,
+                area: '75%',
+                offset: '30px',
+                title: (mData ? '修改' : '添加') + '代理',
+                content: $('#userEditDialog').html(),
+                success: function (layero, dIndex) {
+                    var door_domain = mData ? mData.door_domain : "";
+                    //getDoorDomain(door_domain)
+
+                    // 回显表单数据
+                    form.val('userEditForm', mData);
+                    // 表单提交事件
+                    form.on('submit(userEditSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        $.post(mData ? server_url + "agent/editAgentLevel?pid=" + aid : server_url + "agent/addAgentLevel?pid=" + aid, data.field, function (res) {  // 实际项目这里url可以是mData?'user/update':'user/add'
+                            layer.close(loadIndex);
+                            if (res.code === 200) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                if (mData) {
+                                    insTb.reload();
+                                    /*obj.update({
+                                        name: data.field.name
+                                    });*/
+                                } else {
+                                    insTb.reload({page: {curr: 1}});
+                                }
+                            } else {
+                                layer.msg(res.msg, {icon: 2});
+                            }
+                        }, 'json');
+                        return false;
+                    });
+                    // 禁止弹窗出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                }
+            });
+        }
+
+        /* 删除 */
+        function doDel(obj) {
+            layer.confirm('确定要删除选中数据吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.get(server_url + "agent/delAgentLevel", {
+                    id: obj.data ? obj.data.id : '',
+                    ids: obj.ids ? obj.ids.join(',') : ''
+                }, function (res) {
+                    layer.close(loadIndex);
+                    if (res.code === 200) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload();
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                }, 'json');
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

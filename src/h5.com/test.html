@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>唯一标识</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+</head>
+<body>
+<script>
+    let fingerPrints;
+
+    //获取指纹标识
+    function getVisitorId() {
+        return new Promise((resolve, reject) => {
+            const fpPromise = import('./js/esm.min.js').then(FingerprintJS => FingerprintJS.load());
+            fpPromise.then(fp => fp.get()).then(result => {
+                let visitorId = result.visitorId
+                resolve(visitorId);
+            });
+        });
+    }
+
+    /*getVisitorId().then((visitorId) => {
+        fingerPrints = visitorId;
+        console.log("指纹标识：" + fingerPrints);
+        //alert(fingerPrints);
+        document.write(fingerPrints);
+    });*/
+
+</script>
+
+<br>
+<br>
+
+<script>
+    const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3').then(FingerprintJS => FingerprintJS.load())
+    fpPromise.then(fp => fp.get()).then(result => {
+        const visitorId = result.visitorId
+        console.log(visitorId);
+        document.write(visitorId);
+    })
+</script>
+</body>
+</html>

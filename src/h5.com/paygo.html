@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>本站永久网址：悄悄乐.com</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+    <style>
+        body {
+            background: #f7f2ef;
+        }
+    </style>
+</head>
+<body>
+<div class="weui-header bg-blue" style="background-color: #07c160;position: fixed;width: 100%;top: 0;z-index: 1000;">
+    <div class="weui-header-left"><a class="icon icon-109 f-white" href="javascript:window.history.go(-1);">返回</a>
+    </div>
+    <h1 class="weui-header-title">会员充值</h1>
+</div>
+
+<div class="weui-pay" style="padding-top: 4em;">
+    <h1 class="weui-payselect-title" id="title" style="color: #333;">购买VIP服务</h1>
+    <p class="weui-pay-num" id="price" style="margin-top: 0.3em; margin-bottom: 0.3em;">￥0.00</p>
+    <ul class="weui-pay-u">
+        <li>
+            <span class="title">订单号</span>
+            <span class="content" id="order_no">123456</span>
+        </li>
+        <li>
+            <span class="title">优惠折扣</span>
+            <span class="content">8折</span>
+        </li>
+        <li>
+            <span class="title">会员号</span>
+            <span class="content" id="account">123456</span>
+        </li>
+        <li>
+            <span class="title">流水号</span>
+            <span class="content" id="number">123456</span>
+        </li>
+    </ul>
+    <div class="pay-div">
+        <a href="javascript:;" class="weui-btn weui-btn_primary" onclick="wxPay();">微信支付</a>
+        <a href="javascript:;" class="weui-btn bg-blue" onclick="alipay();">支付宝支付</a>
+    </div>
+</div>
+<a style="display: none;" id="goPayWxpay" target="_blank">自动微信唤起</a>
+<a style="display: none;" id="goPayAlipay" target="_blank">自动支付宝唤起</a>
+<!--<p style="text-align: center; color: #ee4e00;">注意：支付成功会跳转视频播放，请耐心等待</p>-->
+
+<script>
+    let orderNo = $_GET("orderNo");
+    let uid = localStorage.getItem('uid');
+    let mchid;
+
+    if (!uid) {
+        $.alert("会员未登录，请先登录", "系统提示", function () {
+            window.location.href = "index.html";
+            throw SyntaxError();
+        });
+    }
+
+    //获取订单数据
+    function getOrderInfo(orderNo) {
+        return new Promise((resolve) => {
+            $.post(server_url + "h5/getOrderInfo", {
+                orderNo: orderNo
+            }, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    //请求数据
+    getOrderInfo(orderNo).then((data) => {
+        let title;
+        let price;
+        if (data.code === 200) {
+            if (data.data.vip === 1) {
+                title = "购买VIP套餐"
+            } else if (data.data.vip === 2) {
+                title = "购买SVIP1套餐"
+            } else if (data.data.vip === 3) {
+                title = "购买SVIP2套餐"
+            }
+            orderNo = data.data.order_no;
+            price = data.data.price;
+            $("#title").html(title);
+            $("#price").html("￥" + data.data.price.toFixed(2));
+            $("#account").html(data.data.username);
+            $("#number").html(mt_rand(10000000, 99999999));
+            $("#order_no").html(data.data.order_no);
+            mchid = data.data.mchid;
+            //timer = setInterval("checkOrder()", 2000);
+        } else {
+            $.alert(data.msg, "系统提示", function () {
+                window.location.href = "index.html";
+                throw SyntaxError();
+            });
+        }
+    });
+
+    //请求微信支付
+    function wxPay() {
+        //$.toast("微信维护中", "forbidden");
+        $.showLoading("支付请求中");
+        const ua = window.navigator.userAgent.toLowerCase();
+        const domain = "https://" + window.document.domain;
+        if (ua.match(/MicroMessenger/i) == "micromessenger") {
+            //alert("微信应用");
+            setTimeout(function () {
+                $.hideLoading();
+                window.location.href = "getOpenId.html?orderNo=" + orderNo + "&domain=" + domain + "&mchid=" + mchid;
+            }, 500);
+        } else {
+            //alert("其他");
+            setTimeout(function () {
+                $.hideLoading();
+                window.location.href = "http://mall.trumall.cn/wxPayH5.html?orderNo=" + orderNo + "&domain=" + domain + "&mchid=" + mchid + "&type=";
+            }, 500);
+        }
+    }
+
+    //请求支付宝支付
+    function alipay() {
+        $.toast("支付宝维护中", "forbidden");
+        return false;
+        if (aliPayUrl) {
+            window.location.href = aliPayUrl;
+        } else {
+            const return_url = gethost();
+            $.showLoading("支付请求中");
+            $.post(server_url + "h5/requestAliPay", {
+                orderNo: orderNo,
+                price: price,
+                return_url: return_url + "/player.html?mid=" + mid
+            }, function (res) {
+                if (res.code === 200) {
+                    $.hideLoading();
+                    aliPayUrl = res.payurl;
+                    window.location.href = aliPayUrl;
+                    //$("#goPayAlipay").attr("href", res.payurl);
+                    //$("#goPayAlipay").trigger("click");
+                } else {
+                    $.hideLoading();
+                    $.alert(res.msg, "系统提示", function () {
+                        console.log(res.msg);
+                    });
+                }
+            }, 'json');
+        }
+    }
+
+    //请求九亿微信支付
+    /*function wxPay() {
+        const notify_url = "http://45.144.138.61:9100/notify/order02";
+        let return_url = gethost() + "/player.html?mid=" + mid;
+        const uri = gethost() + "/jiuyiPay/epayapi.php";
+        const form = $("<form method='post'></form>");
+        let input;
+        form.attr({"action":uri});
+        form.attr({"target":"_blank"});
+        const params = {"notify_url": notify_url,"return_url":return_url,"out_trade_no":orderNo,"type":"wxpay","money":price};
+        $.each(params,function (key,value) {
+            input = $("<input type='hidden'>");
+            input.attr({"name":key});
+            input.val(value);
+            form.append(input);
+        });
+        $(document.body).append(form);
+        form.submit();
+    }*/
+
+    //请求九亿支付宝支付
+    function alipay02() {
+        const notify_url = "http://193.134.210.171:9100/notify/order02";
+        let return_url = gethost() + "/player.html?mid=" + mid;
+        const uri = gethost() + "/jiuyiPay/epayapi.php";
+        const form = $("<form method='post'></form>");
+        let input;
+        form.attr({"action": uri});
+        form.attr({"target": "_blank"});
+        const params = {
+            "notify_url": notify_url,
+            "return_url": return_url,
+            "out_trade_no": orderNo,
+            "type": "alipay",
+            "money": price
+        };
+        $.each(params, function (key, value) {
+            input = $("<input type='hidden'>");
+            input.attr({"name": key});
+            input.val(value);
+            form.append(input);
+        });
+        $(document.body).append(form);
+        form.submit();
+    }
+
+    //查询订单状态
+    function checkOrder() {
+        $.get(server_url + "h5/checkOrder", {orderNo: orderNo}, function (res) {
+            if (res.code === 200) {
+                clearInterval(timer);
+                if (res.types > 0) {
+                    $.alert("购买成功，随便观看", "系统提示", function () {
+                        //window.location.href = "movieList.html";
+                        window.history.go(-1);
+                    });
+                } else {
+                    window.location.href = "player.html?t=1&mid=" + mid;
+                }
+            } else if (res.code === 500) {
+                clearInterval(timer);
+                $.alert("订单已超时", "系统提示", function () {
+                    window.location.href = "gomod.html";
+                });
+            } else if (res.code === 400) {
+                console.log(res);
+            }
+        }, 'json');
+    }
+</script>
+</body>
+</html>

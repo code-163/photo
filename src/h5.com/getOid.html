@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+</head>
+<body>
+<script>
+    let orderNo = $_GET("orderNo");
+    let c = $_GET("c");
+    let code = $_GET("code");
+    let state = $_GET("state");
+    let domain = $_GET("domain");
+    let mchid = $_GET("mchid");
+
+    function getWxPayInfo(mchid) {
+        return new Promise((resolve) => {
+            $.get(server_url + "h5/getWxPayInfo", {mchid: mchid}, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    if (!orderNo && !mchid) {
+        window.location.href = domain;
+        //throw SyntaxError();
+    } else {
+        if (!code) {
+            getWxPayInfo(mchid).then((data) => {
+                if (data.code === 200) {
+                    let appid = data.data.appid;
+                    let url = data.data.right_domain;
+                    let redirect_uri = encodeURIComponent(url + "/getOid.html?orderNo=" + orderNo + "&domain=" + domain + "&c=" + c + "&mchid=" + mchid);
+                    let uri = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_base&state=" + orderNo + "#wechat_redirect";
+                    window.location.replace(uri);
+                } else {
+                    $.alert(data.msg, "系统提示", function () {
+                        window.location.href = domain;
+                        console.log(res.msg);
+                    });
+                }
+            });
+        } else {
+            $.get(server_url + "h5/getOpenid", {code: code, mchid: mchid}, function (res) {
+                if (res.code === 200) {
+                    //alert("openid=" + res.openid);
+                    getWxPayInfo(mchid).then((data) => {
+                        if (data.code === 200) {
+                            let payUrl = data.data.pay_domain;
+                            window.location.replace(payUrl + "/payWx.html?orderNo=" + orderNo + "&domain=" + domain + "&oid=" + res.openid + "&c=" + c + "&mchid=" + mchid);
+                        } else {
+                            $.alert(data.msg, "系统提示", function () {
+                                window.location.href = domain;
+                                console.log(res.msg);
+                            });
+                        }
+                    });
+                } else {
+                    $.alert(res.msg, "系统提示", function () {
+                        window.location.href = domain;
+                        console.log(res.msg);
+                    });
+                }
+            }, 'json');
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>本站永久网址：悄悄乐.com</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+    <style>
+        body {
+            background: #f7f2ef;
+        }
+
+        .page-hd {
+            padding: 7px;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: #5a5a98 0px 0px 5px;
+            margin: 10px;
+            text-align: center;
+            margin-top: 60px;
+            background-color: #fff;
+        }
+
+        .page-hd h1 {
+            font-size: 24px;
+            margin: 24px 0;
+        }
+
+        .weui-btn_mini {
+            padding: 0.6em 1.32em;
+            margin: 0 6px;
+            width: 250px;
+            font-size: 16px;
+        }
+
+        .page-hd-desc {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .scroll {
+            position: absolute;
+            overflow: scroll;
+            -webkit-overflow-scrolling: touch;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="weui-header bg-blue" style="background-color: #07c160;position: fixed;width: 100%;top: 0;z-index: 1000;">
+    <div class="weui-header-left"><a class="icon icon-109 f-white" href="javascript:window.history.go(-1);">返回</a>
+    </div>
+    <h1 class="weui-header-title">购买VIP</h1>
+</div>
+
+<div class="scroll">
+    <div class="page-hd">
+        <h1>选择充值金额</h1>
+        <a href="javascript:gotoOrder(1,38);" class="weui-btn weui-btn_mini weui-btn_default" id="vip">VIP：￥38（一个月）</a>
+        <a href="javascript:gotoOrder(2,198);" class="weui-btn weui-btn_mini weui-btn_default" id="svip1">SVIP1：￥198（一年）</a>
+        <a href="javascript:gotoOrder(3,298);" class="weui-btn weui-btn_mini weui-btn_default" id="svip2">SVIP2：￥298（二年）</a>
+        <p class="page-hd-desc"><a href="index.html">更多精彩</a></p>
+    </div>
+</div>
+<script>
+    let uid = localStorage.getItem('uid');
+    let code = sessionStorage.getItem("code");
+
+    //alert(code);
+    function goOrder(vip, uid, price) {
+        return new Promise((resolve) => {
+            $.post(server_url + "h5/goOrder", {
+                vip: vip,
+                uid: uid,
+                price: price,
+                code: code
+            }, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    function gotoOrder(vip, price) {
+        if (!uid) {
+            $.alert("会员未登录，请先登录", "系统提示", function () {
+                window.location.href = "index.html";
+            });
+            throw SyntaxError();
+        } else {
+            $.showLoading("正在生成订单");
+            goOrder(vip, uid, price).then((data) => {
+                if (data.code === 200) {
+                    $.hideLoading();
+                    window.location.href = "paygo.html?orderNo=" + data.orderNo;
+                } else {
+                    $.hideLoading();
+                    $.alert(data.msg, "系统提示", function () {
+                        console.log(data.msg);
+                    });
+                }
+            });
+        }
+    }
+
+    function getUserInfo(uid) {
+        $.get(server_url + "h5/getUserInfo", {
+            uid: uid
+        }, function (res) {
+            if (res.code === 200) {
+                let level = res.data.level;
+                if (level === "1") {
+                    $("#vip").css("display", "none");
+                } else if (level === "2") {
+                    $("#vip").css("display", "none");
+                } else if (level === "3") {
+                    $("#vip").css("display", "none");
+                    $("#svip1").css("display", "none");
+                }
+            }
+        }, 'json');
+    }
+
+    $(function () {
+        getUserInfo(uid);
+    });
+</script>
+</body>
+</html>
+<script type="text/javascript">
+    //禁止下拉
+    const overscroll = function (el) {
+        el.addEventListener('touchstart', function () {
+            var top = el.scrollTop, totalScroll = el.scrollHeight, currentScroll = top + el.offsetHeight
+            if (top === 0) {
+                el.scrollTop = 1
+            } else if (currentScroll === totalScroll) {
+                el.scrollTop = top - 1
+            }
+        })
+        el.addEventListener('touchmove', function (evt) {
+            if (el.offsetHeight < el.scrollHeight)
+                evt._isScroller = true
+        })
+    };
+    overscroll(document.querySelector('.scroll'));
+    document.body.addEventListener('touchmove', function (evt) {
+        if (!evt._isScroller) {
+            evt.preventDefault()
+        }
+    })
+</script>

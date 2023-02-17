@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>本站永久网址：悄悄乐.com</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+    <style>
+        body {
+            background: #f7f2ef;
+        }
+
+        .page-hd-title {
+            text-align: center;
+        }
+
+        .page-hd {
+            padding-bottom: 10px;
+        }
+
+        .weui-cells__title {
+            font-size: 18px;
+        }
+
+        .weui-cells {
+            line-height: 2em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-hd">
+    <h1 class="page-hd-title">会员注册</h1>
+</div>
+
+<div class="weui-cells weui-cells_form">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">会员账号</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" placeholder="输入账号" type="text" id="username" value="">
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">输入密码</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" placeholder="输入密码" type="text" id="passwd" value="">
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">验证密码</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" placeholder="验证密码" type="text" id="passwd2" value="">
+        </div>
+    </div>
+</div>
+
+<div class="weui-btn-area" style="margin-top: 3em;">
+    <a class="weui-btn weui-btn_primary" href="javascript:" id="btn">提交注册</a>
+</div>
+
+<script>
+    let orderNo = $_GET("orderNo");
+    let c = $_GET("c");
+    $(function () {
+        $(document).on("click", "#btn", function () {
+            const username = $("#username").val();
+            const passwd = $("#passwd").val();
+            const passwd2 = $("#passwd2").val();
+            if (username === "") {
+                $.toast("账号不能为空", "forbidden");
+                return false;
+            }
+            if (passwd === "") {
+                $.toast("密码不能为空", "forbidden");
+                return false;
+            }
+            if (passwd2 === "") {
+                $.toast("密码不能为空", "forbidden");
+                return false;
+            }
+            if (passwd !== passwd2) {
+                $.toast("密码不是一致", "forbidden");
+                return false;
+            } else {
+                $.showLoading("数据请求中");
+                updateUserRegister(username, passwd, orderNo, c).then((data) => {
+                    if (data.code === 200) {
+                        localStorage.setItem("uid", data.uid);
+                        localStorage.setItem("username", data.username);
+                        localStorage.setItem("loginTime", data.loginTime);
+                        $.hideLoading();
+                        $.alert("<span style='line-height: 1.8em; color: #fa5151;'>注册成功，永久网址：悄悄乐.com，请截图保存永不迷路。</span>", "系统提示", function () {
+                            window.location.href = "index.html";
+                        });
+                        /*$.toast(data.msg, 500, function () {
+                            window.location.href = "index.html";
+                        });*/
+                    } else {
+                        $.hideLoading();
+                        $.alert(data.msg, "系统提示", function () {
+                            console.log(data.msg);
+                        });
+                    }
+                });
+            }
+        });
+        //解决表单控件不能回弹 只有微信ios有这个问题
+        $("input,select,textarea").blur(function () {
+            setTimeout(() => {
+                const scrollHeight = document.documentElement.scrollTop || document.body.scrollTop || 0;
+                window.scrollTo(0, Math.max(scrollHeight - 1, 0));
+            }, 100);
+        })
+    });
+
+    //会员注册
+    function updateUserRegister(username, passwd, orderNo, c) {
+        return new Promise((resolve) => {
+            $.post(server_url + "h5/updateUserRegister", {
+                username: username,
+                passwd: passwd,
+                orderNo: orderNo,
+                code: c
+            }, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+</script>
+</body>
+</html>

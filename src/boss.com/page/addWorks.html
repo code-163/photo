@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>添加作品</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../assets/module/admin.css?v=318"/>
+    <script type="text/javascript" src="../assets/libs/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../assets/js/server_url.js"></script>
+    <script type="text/javascript" src="../assets/js/function.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        #formAdvForm .layui-form-item {
+            margin-top: 20px;
+            margin-bottom: 0;
+        }
+
+        #formAdvForm .layui-form-item .layui-inline {
+            margin-bottom: 25px;
+            margin-right: 0;
+        }
+
+        .form-group-bottom {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, .05);
+        }
+
+        /* 文件列表item */
+        .file-choose-list-item {
+            position: relative;
+            display: inline-block;
+            vertical-align: top;
+            padding: 8px 8px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        .file-choose-list-item:hover {
+            background-color: #F7F7F7;
+        }
+
+        /* 文件列表图片 */
+        .file-choose-list-item-img {
+            width: 70px;
+            height: 70px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            background-color: #eee;
+        }
+
+        .file-choose-list-item-img.img-icon {
+            background-size: inherit;
+            background-color: transparent;
+        }
+
+        .file-choose-list-item.active .file-choose-list-item-img:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* 文件列表名称 */
+        .file-choose-list-item-name {
+            width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #333;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        /* 文件列表复选框 */
+        .file-choose-list-item-ck {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+        }
+
+        .file-choose-list-item-ck .layui-form-checkbox {
+            padding: 0;
+        }
+
+        /* 文件列表操作菜单 */
+        .file-choose-oper-menu {
+            background-color: #fff;
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            border-radius: 2px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, .15);
+            transition: all .3s;
+            overflow: hidden;
+            transform: scale(0);
+            transform-origin: left top;
+            visibility: hidden;
+        }
+
+        .file-choose-oper-menu.show {
+            transform: scale(1);
+            visibility: visible;
+        }
+
+        /* 文件列表操作菜单item */
+        .file-choose-oper-menu-item {
+            color: #555;
+            padding: 6px 5px;
+            font-size: 14px;
+            min-width: 70px;
+            text-align: center;
+            cursor: pointer;
+            display: block;
+        }
+
+        .file-choose-oper-menu-item:hover {
+            background-color: #eee;
+        }
+
+        /** 文件列表为空时样式 */
+        .file-choose-empty {
+            text-align: center;
+            color: #999;
+            padding: 50px 0;
+        }
+
+        .file-choose-empty .layui-icon {
+            font-size: 60px;
+            display: block;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<form class="layui-form" id="formAdvForm" lay-filter="formAdvForm">
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+        <div class="layui-card">
+            <div class="layui-card-header">添加作品</div>
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">作品名称:</label>
+                        <div class="layui-input-block">
+                            <input name="title" value="" placeholder="请输入商品名称" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">选择模特:</label>
+                        <div class="layui-input-block">
+                            <input name="mid" value="" placeholder="请选择模特" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">价格:</label>
+                        <div class="layui-input-block">
+                            <input name="price" value="" type="number" placeholder="请输入价格" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label">百度网盘:</label>
+                        <div class="layui-input-block">
+                            <input name="bdwp_url" value="" placeholder="请输入网盘地址" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label">提取码:</label>
+                        <div class="layui-input-block">
+                            <input name="carry_code" value="" placeholder="请输入提取码" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label">解压密码:</label>
+                        <div class="layui-input-block">
+                            <input name="de_passwd" value="" placeholder="请输入解压密码" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label">作品类型:</label>
+                        <div class="layui-input-block">
+                            <select name="types">
+                                <option value="2">免费</option>
+                                <option value="0">VIP</option>
+                                <option value="1">SVIP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md8">
+                        <label class="layui-form-label">介绍:</label>
+                        <div class="layui-input-block">
+                            <input name="introduce" value="" placeholder="请输入介绍" class="layui-input"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">作品图片</div>
+            <div class="layui-card-body">
+                <div>
+                    <span style="margin-top:4px; margin-right: 10px;" id="file-btn-uploadImage" class="layui-btn icon-btn"><i class="layui-icon">&#xe681;</i>上传封面</span>
+                    <span style="margin-top:4px;" id="file-btn-uploadAtlas" class="layui-btn layui-btn-normal icon-btn"><i class="layui-icon">&#xe681;</i>上传图册</span>
+                </div>
+                <div id="file-list-group"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group-bottom text-right">
+        <button type="reset" class="layui-btn layui-btn-primary">&emsp;重置&emsp;</button>
+        <button class="layui-btn" lay-filter="formAdvSubmit" lay-submit>&emsp;提交&emsp;</button>
+    </div>
+
+</form>
+
+<!-- js部分 -->
+<script type="text/javascript" src="../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../assets/js/common.js?v=318"></script>
+<script type="text/javascript" src="../assets/libs/tinymce/tinymce.min.js"></script>
+<script>
+    layui.use(['cascader', 'layer', 'form', 'table', 'laydate', 'treeTable', 'xmSelect', 'admin', 'upload', 'fileChoose', 'contextMenu'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var admin = layui.admin;
+        var laydate = layui.laydate;
+        var treeTable = layui.treeTable;
+        var xmSelect = layui.xmSelect;
+        var upload = layui.upload;
+        var fileChoose = layui.fileChoose;
+        var contextMenu = layui.contextMenu;
+        var cascader = layui.cascader;
+
+        //上传主图
+        upload.render({
+            elem: '#file-btn-uploadImage',
+            accept: 'images',
+            acceptMime: 'image/*',
+            url: server_url + "uploadPhoto?admincode=" + admincode + "&admintoken=" + admintoken,
+            auto: true,
+            field: "imageFile",
+            before: function (obj) {
+                layer.load();
+            },
+            done: function (res, index, upload) {
+                if (res.code === 200) {
+                    $("#zhutu").remove();
+                    getImgBase64(res.image).then((imgBase64) => {
+                        let htmlStr = '<div class="file-choose-list-item goodsImage" id="zhutu">\n' +
+                            '<img src="' + imgBase64 + '" style="width: 70px; height: 70px;">\n' +
+                            '<div class="file-choose-list-item-name">封面</div>\n' +
+                            '<input type="hidden" name="cover" value="' + res.image + '">\n' +
+                            '</div>';
+                        $("#file-list-group").prepend(htmlStr);
+                    });
+                    layer.closeAll('loading');
+                    layer.msg(res.msg);
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+                console.log(res);
+            }
+        });
+
+        //上传图册
+        upload.render({
+            elem: '#file-btn-uploadAtlas',
+            accept: 'images',
+            acceptMime: 'image/*',
+            multiple: true,
+            url: server_url + "uploadPhoto?admincode=" + admincode + "&admintoken=" + admintoken,
+            auto: true,
+            field: "imageFile",
+            before: function (obj) {
+                layer.load();
+            },
+            done: function (res, index, upload) {
+                if (res.code === 200) {
+                    getImgBase64(res.image).then((imgBase64) => {
+                        let htmlStr = '<div class="file-choose-list-item goodsImage">\n' +
+                            '<img src="' + imgBase64 + '" style="width: 70px; height: 70px;">\n' +
+                            '<div class="file-choose-list-item-name">图册</div>\n' +
+                            '<input type="hidden" name="atlas" value="' + res.image + '">\n' +
+                            '</div>';
+                        $("#file-list-group").append(htmlStr);
+                    });
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+                console.log(res);
+            },
+            allDone: function (obj) {
+                console.log("得到总文件数" + obj.total); //得到总文件数
+                console.log("请求成功的文件数" + obj.successful); //请求成功的文件数
+                console.log("请求失败的文件数" + obj.aborted); //请求失败的文件数
+                layer.closeAll('loading');
+                layer.msg("成功上传" + obj.successful + "张图片");
+            }
+        });
+
+        //点击图片右键菜单
+        $("#file-list-group").on("contextmenu", ".goodsImage", function (e) {
+            contextMenu.show([
+                {
+                    icon: 'layui-icon layui-icon-delete text-danger',
+                    name: '<span class="text-danger">删除此图片</span>',
+                    click: function (e, event) {
+                        $(event.currentTarget).remove();
+                    }
+                }
+            ], e.clientX, e.clientY, e);
+            return false;
+        });
+
+        //获取模特数据
+        $(function () {
+            $.get(server_url + "getModel?admincode=" + admincode + "&admintoken=" + admintoken, {}, function (res) {
+                if (res.code === 200) {
+                    cascader.render({
+                        elem: '#formAdvForm input[name="mid"]',
+                        itemHeight: '350px',
+                        data: res.data
+                    });
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }, 'json');
+        })
+
+        /* 监听表单提交 */
+        form.on('submit(formAdvSubmit)', function (data) {
+            if (!data.field.cover) {
+                layer.msg("请上传主图", {icon: 2});
+                return false;
+            }
+            var atlas = [];
+            $("input[name='atlas']").each(function (index, obj) {
+                atlas.push(obj.value);
+            });
+            data.field.atlas = atlas.join(',');
+            if (!data.field.atlas) {
+                layer.msg("请上传图册", {icon: 2});
+                return false;
+            }
+            //layer.alert(JSON.stringify(data.field), {skin: 'layui-layer-admin', shade: .1});
+            //console.log(data.field);
+            var loadIndex = layer.load(2);
+            $.post(server_url + "addWorks?admincode=" + admincode + "&admintoken=" + admintoken, data.field, function (res) {
+                layer.close(loadIndex);
+                if (res.code === 200) {
+                    //layer.msg(res.msg, {icon: 1});
+                    layer.msg(res.msg, {icon: 1, time: 500}, function () {
+                        location.href = "./works.html";
+                    });
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }, 'json');
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

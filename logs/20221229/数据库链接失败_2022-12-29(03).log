@@ -1,0 +1,2 @@
+2022-12-29 03:35:49 => Error 1045 (28000): Access denied for user 'photo'@'localhost' (using password: YES)
+2022-12-29 03:36:36 => Error 1045 (28000): Access denied for user 'photo'@'localhost' (using password: YES)

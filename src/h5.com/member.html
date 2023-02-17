@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>本站永久网址：悄悄乐.com</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+    <style>
+        body {
+            background: #f7f2ef;
+        }
+
+        .top {
+            background-image: url(https://img.yalayi.net/app/images/user_top_bg.png);
+            width: 100%;
+            height: 200px;
+            padding: 16px;
+            box-sizing: border-box;
+            background-repeat: no-repeat;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        .top img {
+            width: 70px;
+            margin-top: 1.5em;
+        }
+
+        .top .title {
+            text-align: center;
+            margin-top: 3em;
+        }
+
+        .top span {
+            position: relative;
+            top: -1.5em;
+            left: 0.8em
+        }
+
+        .weui-cells {
+            margin-top: 0em;
+            line-height: 2em;
+        }
+
+        .weui-cells:after {
+            border-bottom: 0px solid #e5e5e5;
+        }
+
+        .weui-grids {
+            background-color: #fff;
+            margin-top: 0.3em;
+            margin-bottom: 0.3em;
+        }
+
+        .weui-grid__icon {
+            width: 100%;
+            text-align: center;
+        }
+
+        .weui-grid {
+            width: 50%;
+            padding: 10px 10px;
+        }
+    </style>
+    <script>
+        let uid = localStorage.getItem('uid');
+        let username = localStorage.getItem('username');
+        if (!uid) {
+            window.location.href = "index.html";
+            throw SyntaxError();
+        }
+    </script>
+</head>
+<body>
+
+<div class="weui-header bg-blue" style="background-color: #07c160;position: fixed;width: 100%;top: 0;z-index: 1000;">
+    <div class="weui-header-left">
+        <a class="icon icon-109 f-white" id="header" href="javascript:window.history.go(-1);">返回</a>
+    </div>
+    <h1 class="weui-header-title">个人中心</h1>
+</div>
+
+<div class="top">
+    <p class="title">本站永久网址：悄悄乐.com</p>
+    <div>
+        <img src="https://img.yalayi.net/app/images/nologin.png">
+        <span>你好，<i id="username">张申然</i></span>
+    </div>
+</div>
+
+<div class="weui-grids">
+    <a href="javascript:;" class="weui-grid js_grid">
+        <div class="weui-grid__icon">会员等级</div>
+        <p class="weui-grid__label" id="level"></p>
+    </a>
+    <a href="javascript:;" class="weui-grid js_grid">
+        <div class="weui-grid__icon">有效时间</div>
+        <p class="weui-grid__label" id="member_end_time"></p>
+    </a>
+    <!--<a href="javascript:;" class="weui-grid js_grid" >
+        <div class="weui-grid__icon">注册时间</div>
+        <p class="weui-grid__label">2023-01-01 12:35:01</p>
+    </a>-->
+</div>
+
+<div class="weui-cells">
+    <div class="weui-cell weui-cell_access" onclick="window.location.href='buyvip.html';">
+        <div class="weui-cell__bd">升级/充值</div>
+        <div class="weui-cell__ft" style="font-size: 0">
+            <span style="vertical-align:middle; font-size: 17px;">续费或升级</span>
+        </div>
+    </div>
+</div>
+<div class="weui-cells">
+    <div class="weui-cell weui-cell_access" onclick="window.location.href='passwd.html';">
+        <div class="weui-cell__bd">修改信息</div>
+        <div class="weui-cell__ft" style="font-size: 0">
+            <span style="vertical-align:middle; font-size: 17px;">密码修改</span>
+        </div>
+    </div>
+</div>
+<div class="weui-cells">
+    <div class="weui-cell weui-cell_access">
+        <div class="weui-cell__bd">关于我们</div>
+        <div class="weui-cell__ft" style="font-size: 0">
+            <span style="vertical-align:middle; font-size: 17px;"></span>
+        </div>
+    </div>
+</div>
+<div class="weui-cells">
+    <div class="weui-cell weui-cell_access">
+        <div class="weui-cell__bd">帮助说明</div>
+        <div class="weui-cell__ft" style="font-size: 0">
+            <span style="vertical-align:middle; font-size: 17px;"></span>
+        </div>
+    </div>
+</div>
+<div class="weui-cells">
+    <div class="weui-cell weui-cell_access" onclick="outLoginUser();">
+        <div class="weui-cell__bd">退出账号</div>
+        <div class="weui-cell__ft" style="font-size: 0">
+            <span style="vertical-align:middle; font-size: 17px;"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (!uid) {
+        window.location.href = "index.html";
+    } else {
+        getUserInfo(uid).then((data) => {
+            if (data.code === 200) {
+                $("#username").html(data.data.username);
+                $("#member_end_time").html(data.data.member_end_time ? data.data.member_end_time : "无记录");
+
+                let level = data.data.level;
+                let levelMsg;
+                if (level === "0") {
+                    levelMsg = "普通用户";
+                } else if (level === "1") {
+                    levelMsg = "VIP会员";
+                } else if (level === "2") {
+                    levelMsg = "SVIP1会员";
+                } else if (level === "3") {
+                    levelMsg = "SVIP2会员";
+                }
+                $("#level").html(levelMsg);
+            } else {
+                $.alert(data.msg, "系统提示", function () {
+                    console.log(data.msg);
+                });
+            }
+        });
+    }
+
+    //获取会员数据
+    function getUserInfo(uid) {
+        return new Promise((resolve) => {
+            $.get(server_url + "h5/getUserInfo", {uid: uid}, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    //退出账号
+    function outLoginUser() {
+        localStorage.removeItem("uid");
+        localStorage.removeItem("username");
+        localStorage.removeItem("loginTime");
+        window.location.href = "index.html";
+    }
+</script>
+</body>
+</html>

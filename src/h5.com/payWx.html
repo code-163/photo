@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微信支付</title>
+    <meta name="robots" content="none"/>
+    <meta name="Baiduspider" content="noindex,nofollow"/>
+    <meta name="Sosospider" content="noindex,nofollow"/>
+    <meta name="sogou spider" content="noindex,nofollow"/>
+    <meta name="360Spider" content="noindex,nofollow"/>
+    <meta name="YodaoBot" content="noindex,nofollow"/>
+    <meta name="Googlebot" content="noindex,nofollow"/>
+    <meta name="MicroMessenger" content="noindex,nofollow"/>
+    <meta name="QQBrowser" content="noindex,nofollow"/>
+    <meta content=yes name=apple-mobile-web-app-capable>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="./css/weui.css"/>
+    <link rel="stylesheet" href="./css/weuix.css"/>
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/zepto.weui.js"></script>
+    <script src="./js/iscroll-lite.js"></script>
+    <script src="./js/cryptojs/core.js"></script>
+    <script src="./js/cryptojs/enc-base64.js"></script>
+    <script src="./js/cryptojs/cipher-core.js"></script>
+    <script src="./js/cryptojs/aes.js"></script>
+    <script src="./js/cryptojs/md5.js"></script>
+    <script src="./js/php.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/function.js"></script>
+</head>
+<body>
+<script>
+    let orderNo = $_GET("orderNo");
+    let domain = $_GET("domain");
+    let oid = $_GET("oid");
+    let c = $_GET("c");
+    let mchid = $_GET("mchid");
+    let jsApiParameters;
+
+    function getDomain() {
+        return new Promise((resolve) => {
+            $.get(server_url + "h5/getDomain", {}, function (res) {
+                resolve(res);
+            }, 'json');
+        });
+    }
+
+    //请求微信JSAPI支付
+    function requestWxJsapiPay(openid, orderNo, domain, mchid) {
+        $.showLoading("支付加载中");
+        $.post(server_url + "h5/requestWxJsapiPay", {openid: openid, orderNo: orderNo, mchid: mchid}, function (res) {
+            if (res.code === 200) {
+                $.hideLoading();
+                jsApiParameters = res.data
+                jsApiCall(domain, orderNo);
+            } else {
+                $.alert(res.msg, "系统提示", function () {
+                    window.location.href = domain + "/ex.html?c=" + c;
+                    console.log(res.msg);
+                });
+            }
+        }, 'json');
+    }
+
+    function jsApiCall(domain, orderNo) {
+        WeixinJSBridge.invoke(
+            'getBrandWCPayRequest', jsApiParameters,
+            function (res) {
+                if (res.err_msg === "get_brand_wcpay_request:ok") {
+                    $.alert("支付成功", "提示", function () {
+                        window.location.href = domain + "/register.html?orderNo=" + orderNo + "&c=" + c;
+                        return false;
+                    });
+                }
+            }
+        );
+    }
+
+    function callpay() {
+        if (typeof WeixinJSBridge == "undefined") {
+            if (document.addEventListener) {
+                document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+            } else if (document.attachEvent) {
+                document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+            }
+        } else {
+            jsApiCall();
+        }
+    }
+
+    $(function () {
+        if (!orderNo) {
+            getDomain().then((data) => {
+                if (data.code === 200) {
+                    window.location.href = data.domain;
+                } else {
+                    window.location.href = "index.html";
+                }
+            });
+            throw SyntaxError();
+        }
+        requestWxJsapiPay(oid, orderNo, domain, mchid);
+    });
+</script>
+<div class="pay-div" style="width: 80%; margin: auto; padding: 60% 0 0 0;">
+    <a href="javascript:void(0);" class="weui-btn weui-btn_primary" id="pay" onclick="callpay()">立即支付</a>
+</div>
+</body>
+</html>
